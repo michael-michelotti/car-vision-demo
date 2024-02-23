@@ -34,6 +34,9 @@ YOLO_PREDICTION_START = 5
 
 # BBOX Configuration
 CV2_BLUE = (255, 0, 0)
+CV2_GREEN = (0, 255, 0)
+CV2_RED = (0, 0, 255)
+BOX_COLOR = CV2_BLUE
 BOX_STROKE_WIDTH = 2
 
 
@@ -70,10 +73,10 @@ def add_bboxes_to_frame(image, bboxes, confidence_values):
         w = int(box[2] * width_ratio)
         h = int(box[3] * height_ratio)
 
-        cv2.rectangle(image, (x, y), (x+w, y+h), CV2_BLUE, BOX_STROKE_WIDTH)
+        cv2.rectangle(image, (x, y), (x+w, y+h), BOX_COLOR, BOX_STROKE_WIDTH)
         class_and_conf_str = f"CAR {confidence_values[i] * 100:.1f}%"
         cv2.putText(image, class_and_conf_str, (x, y - 10),
-                    cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.5, CV2_BLUE)
+                    cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.5, BOX_COLOR)
 
 
 def cleanup_resources(capture):
