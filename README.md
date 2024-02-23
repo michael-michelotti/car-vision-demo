@@ -10,20 +10,29 @@ This is a demonstration script utilizing the [OpenCV](https://opencv.org/) Pytho
 No hardware is required.
 #### Software
 - Python Interpreter ([CPython 3.10](https://www.python.org/downloads/release/python-3100/) was used in this case)
+- YOLO3 configuration and weights
 ### Installation
-1. Download and install Python interpreter
-2. Download the source code
+__1. Download and install Python interpreter__
+
+__2. Download the source code__
 ```
 git clone git@github.com:michael-michelotti/car-vision-demo.git && cd car-vision-demo
 ```
-3. Install dependencies (you may want to create a virtual environment first; `python -m venv .venv`)
+
+__3. Download YOLO3 configuration and weights__
+
+Download the Darknet-trained YOLO3 model (trained on COCO dataset) and configuration from [the YOLO website](https://pjreddie.com/darknet/yolo/). Scroll down to YOLOv3-320 and download from the `cfg` and `weights` links.
+
+__4. Install dependencies (you may want to create a virtual environment first; `python -m venv .venv`)__
 ```
 pip install -r requirements.txt
 ```
-4. Run the script!
+
+__5. Run the script!__
 ```
 python main.py
 ```
+
 ## Usage
 Once you've installed the dependencies and run the script, you should have a video window open playing the car video with predictions included.
 
