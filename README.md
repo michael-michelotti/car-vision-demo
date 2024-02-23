@@ -1,6 +1,7 @@
 # car-vision-demo
 Demonstration of script to use Computer Vision (CV) to identify cars from a video stream
-![Car video with detection](https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExcWluODNnaW85OXQzcjludWk3NWMxNXk3czR5dzNhZHo0OTR0YjlkOCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/g530zImi4UNcO00rvq/giphy.gif)
+
+![Car video with detections](https://github.com/michael-michelotti/car-vision-demo/blob/main/car_demo.gif)
 
 ## Overview
 This is a demonstration script utilizing the [OpenCV](https://opencv.org/) Python API to draw Computer Vision (CV) prediction boxes around cars. The input car video is provided as cars_at_intersection.MOV. 
