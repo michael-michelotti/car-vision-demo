@@ -19,7 +19,7 @@ VIDEO_FILENAME = "cars_at_intersection.MOV"
 BIT_PER_CHANNEL = 8
 YOLO_IMAGE_SIZE = 320
 YOLO_SCALE = 1 / ((2 ** BIT_PER_CHANNEL) - 1)
-COCO_CLASS_TO_TRACK = CocoObjectClass.CAR
+COCO_CLASSES_TO_TRACK = [CocoObjectClass.CAR, CocoObjectClass.PERSON]
 THRESHOLD = 0.5
 SUPPRESSION_THRESHOLD = 0.6
 OUTPUT_FPS = 5
@@ -38,6 +38,13 @@ CV2_GREEN = (0, 255, 0)
 CV2_RED = (0, 0, 255)
 BOX_COLOR = CV2_BLUE
 BOX_STROKE_WIDTH = 2
+
+
+def read_in_coco_names(filename: str) -> list:
+    with open(filename, "r") as fd:
+        coco_name_list = [line.rstrip() for line in fd]
+
+    return coco_name_list
 
 
 def get_object_bboxes(model_outputs, coco_class_index):
@@ -63,7 +70,7 @@ def get_object_bboxes(model_outputs, coco_class_index):
     return filtered_bboxes, filtered_confidence_values
 
 
-def add_bboxes_to_frame(image, bboxes, confidence_values):
+def add_bboxes_to_frame(image, bboxes, confidence_values, class_name):
     """Given a list of boxes and confidence values, draw boxes on given image or frame"""
     height_ratio = image.shape[0] / YOLO_IMAGE_SIZE
     width_ratio = image.shape[1] / YOLO_IMAGE_SIZE
@@ -74,12 +81,13 @@ def add_bboxes_to_frame(image, bboxes, confidence_values):
         h = int(box[3] * height_ratio)
 
         cv2.rectangle(image, (x, y), (x+w, y+h), BOX_COLOR, BOX_STROKE_WIDTH)
-        class_and_conf_str = f"CAR {confidence_values[i] * 100:.1f}%"
+        class_and_conf_str = f"{class_name} {confidence_values[i] * 100:.1f}%"
         cv2.putText(image, class_and_conf_str, (x, y - 10),
                     cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.5, BOX_COLOR)
 
 
 def cleanup_resources(capture):
+    """Close video capture session and close cv2 windows before exiting the application"""
     capture.release()
     cv2.destroyAllWindows()
 
@@ -89,6 +97,7 @@ def main():
     Feed model (pretrained Darknet YOLO3 model) into CV2 DNN implementation,
     draw prediction boxes on frame for COCO_CLASS_TO_TRACK object, stream video at desired OUTPUT_FPS.
     """
+
     nn = cv2.dnn.readNetFromDarknet(cfgFile="yolov3.cfg", darknetModel="yolov3.weights")
     nn.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
     nn.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
@@ -115,9 +124,10 @@ def main():
         outputs = nn.forward(output_names)
 
         # Feed outputs into utility functions to filter and draw prediction boxes
-        car_bboxes, car_confidence_values = get_object_bboxes(outputs, COCO_CLASS_TO_TRACK)
-        add_bboxes_to_frame(frame, car_bboxes, car_confidence_values)
-        cv2.imshow("Car Vision Video - San Diego Intersection", frame)
+        for class_ in COCO_CLASSES_TO_TRACK:
+            object_bboxes, object_confidence_values = get_object_bboxes(outputs, class_)
+            add_bboxes_to_frame(frame, object_bboxes, object_confidence_values, class_.name)
+        cv2.imshow("Computer Vision Video - San Diego Intersection", frame)
 
         # Wait however long to meet desired OUTPUT_FPS
         processing_time = time.time() - frame_start
